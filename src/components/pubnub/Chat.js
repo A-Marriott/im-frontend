@@ -20,23 +20,23 @@ function Chat(props) {
       let channelArray = []
       // data.forEach(channel => setChannels(channels => [...channels, channel.name]))
       data.forEach(channel => channelArray.push(channel.name))
+      setCurrentChannel(channelArray[0])
       setChannels(channelArray)
     })
   }
 
   const getMessages = () => {
+    addMessage([])
     pubnub.fetchMessages(
         {
-            channels: channels,
+            channels: [currentChannel],
             end: '15343325004275466',
             count: 100
         },
         (status, response) => {
-          channels.forEach(channel => {
-            channel = channel.replace(' ', '%20')
-            response.channels[channel]?.forEach(msg => {
-              addMessage(messages => [...messages, msg.message]);
-            })
+          const channelAccessString = currentChannel.replace(' ', '%20')
+          response.channels[channelAccessString]?.forEach(msg => {
+            addMessage(messages => [...messages, msg.message]);
           })
         }
     );
@@ -56,10 +56,10 @@ function Chat(props) {
   }, [pubnub, channels]);
 
   useEffect(() => {
-    if (channels.length > 0) {
+    if (currentChannel.length > 0) {
       getMessages();
     }
-  }, [channels]);
+  }, [currentChannel]);
 
   const handleMessage = event => {
     const message = event.message;
