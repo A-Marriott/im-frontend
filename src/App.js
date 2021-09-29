@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PubNub from 'pubnub';
 import { PubNubProvider, usePubNub } from 'pubnub-react';
 
-import Login from './components/Login';
+import Login from './components/account/Login';
+import NewAccount from './components/account/NewAccount';
 
 const pubnub = new PubNub({
   publishKey: 'pub-c-854fa4a9-e5f4-42f0-9bf4-b060ac55fd65',
@@ -17,7 +18,7 @@ function App() {
     // <PubNubProvider client={pubnub}>
     //   <Chat />
     // </PubNubProvider>
-    <Login></Login>
+    <NewAccount></NewAccount>
   );
 }
 
