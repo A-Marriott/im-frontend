@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 
-const Login = () => {
+const Login = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState(false)
+
+  const error = <p>Either your username or password was incorrect</p>
 
   const getUser = () => {
     fetch(`http://localhost:3000/api/v1/users?username=${username}&password=${password}`, {
@@ -12,7 +15,14 @@ const Login = () => {
       },
     })
     .then((response) => response.json())
-    .then((data) => console.log(data))
+    .then((data) => {
+      if (data) {
+        props.setuuid(username)
+        props.setLoggedIn(true)
+      } else {
+        setErrorMessage(true)
+      }
+    })
   }
 
   return (
@@ -37,6 +47,7 @@ const Login = () => {
           />
       </div>
       <button onClick={getUser}>Submit</button>
+      {errorMessage && error}
     </div>
   )
 }

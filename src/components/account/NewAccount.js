@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-const NewAccount = () => {
+const NewAccount = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
 
@@ -13,7 +13,13 @@ const NewAccount = () => {
         Accepts: "application/json",
       },
     })
-    .then((response) => console.log(response))
+    .then((response) => response.json())
+    .then((data) => {
+      if (data) {
+        props.setuuid(username)
+        props.setLoggedIn(true)
+      }
+    })
   }
 
   return (
