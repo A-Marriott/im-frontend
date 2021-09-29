@@ -8,7 +8,8 @@ function Chat(props) {
   const [currentChannel, setCurrentChannel] = useState('');
   const [messages, addMessage] = useState({});
   const [message, setMessage] = useState('');
-  const [msg, newmsg] = useState({})
+  const [msg, newmsg] = useState({});
+  const [listenerAdded, setListenerAdded] = useState(false);
 
   const getMessages = () => {
     addMessage([])
@@ -73,11 +74,10 @@ function Chat(props) {
   }, []);
 
   useEffect(() => {
-
-    if (channels.length > 0) {
-      pubnub.removeListener({ message: handleMessage })
+    pubnub.subscribe({ channels });
+    if (!listenerAdded) {
       pubnub.addListener({ message: handleMessage });
-      pubnub.subscribe({ channels });
+      setListenerAdded(true)
     }
   }, [pubnub, channels]);
 
@@ -114,7 +114,7 @@ function Chat(props) {
       <div style={chatStyles}>
         <div style={headerStyles}>React Chat Example</div>
         <div style={listStyles}>
-          {messages[currentChannel]?.map((message, index) => {
+          {messages[currentChannel]?.map(msg => msg).reverse().map((message, index) => {
             return (
               <div key={`message-${index}`} style={messageStyles}>
                 {message.user} - {message.message}
@@ -146,15 +146,6 @@ function Chat(props) {
           {channels?.map(channel => {
             return <button onClick={() => setCurrentChannel(channel)}>{channel}</button>
           })}
-          <button
-            style={buttonStyles}
-            onClick={e => {
-              e.preventDefault();
-              console.log(messages)
-            }}
-          >
-            Check
-          </button>
         </div>
       </div>
     </div>
@@ -187,7 +178,7 @@ const listStyles = {
   alignItems: 'flex-start',
   backgroundColor: 'white',
   display: 'flex',
-  flexDirection: 'column',
+  flexDirection: 'column-reverse',
   flexGrow: 1,
   overflow: 'auto',
   padding: '10px',
