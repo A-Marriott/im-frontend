@@ -18,7 +18,7 @@ const NewAccount = () => {
 
   return (
     <div>
-      <h3>New Post</h3>
+      <h3>New Account</h3>
       <div>
         <label>Username</label>
         <input

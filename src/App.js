@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import PubNub from 'pubnub';
 import { PubNubProvider, usePubNub } from 'pubnub-react';
 
-import Login from './components/account/Login';
-import NewAccount from './components/account/NewAccount';
+import UserGreeting from './components/account/UserGreeting';
+
 
 const pubnub = new PubNub({
   publishKey: 'pub-c-854fa4a9-e5f4-42f0-9bf4-b060ac55fd65',
@@ -14,12 +14,17 @@ const pubnub = new PubNub({
 // how do init pubnub for diff people with diff UUID, surely same pub/sub keys?
 
 function App() {
-  return (
-    // <PubNubProvider client={pubnub}>
-    //   <Chat />
-    // </PubNubProvider>
-    <NewAccount></NewAccount>
-  );
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  if (loggedIn) {
+    return (
+    <PubNubProvider client={pubnub}>
+      <Chat/>
+    </PubNubProvider>
+    )
+  } else {
+    return <UserGreeting/>;
+  }
 }
 
 function Chat() {
