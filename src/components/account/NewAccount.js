@@ -5,7 +5,7 @@ const NewAccount = () => {
   const [password, setPassword] = useState('')
 
   const submitUser = () => {
-    fetch('https://rap-app-backend.herokuapp.com/api/v1/youtube_videos', {
+    fetch('http://localhost:3000/api/v1/users', {
       method: 'post',
       body: JSON.stringify({username: username, password: password}),
       headers: {
@@ -36,6 +36,7 @@ const NewAccount = () => {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           />
+          <p>n.b. passwords are stored as strings, please do not use a real password</p>
       </div>
       <button onClick={submitUser}>Submit</button>
     </div>
