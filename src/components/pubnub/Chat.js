@@ -4,12 +4,13 @@ import { usePubNub } from 'pubnub-react';
 function Chat(props) {
   const pubnub = usePubNub();
   const [channels, setChannels] = useState([]);
+  const [allChannels, setAllChannels] = useState([]);
   const [currentChannel, setCurrentChannel] = useState('');
   const [messages, addMessage] = useState([]);
   const [message, setMessage] = useState('');
 
-  const getChannels = () => {
-    fetch(`http://localhost:3000/api/v1/channels?username=${props.uuid}`, {
+  const getMyChannels = () => {
+    fetch(`http://localhost:3000/api/v1/channels/1?username=${props.uuid}`, {
       headers: {
         "Content-Type": "application/json",
         Accepts: "application/json",
@@ -18,10 +19,22 @@ function Chat(props) {
     .then((response) => response.json())
     .then((data) => {
       let channelArray = []
-      // data.forEach(channel => setChannels(channels => [...channels, channel.name]))
       data.forEach(channel => channelArray.push(channel.name))
       setCurrentChannel(channelArray[0])
       setChannels(channelArray)
+    })
+  }
+
+  const getAllChannels = () => {
+    fetch('http://localhost:3000/api/v1/channels/', {
+      headers: {
+        "Content-Type": "application/json",
+        Accepts: "application/json",
+      },
+    })
+    .then((response) => response.json())
+    .then((data) =>  {
+      data.forEach(channel => setAllChannels(channels => [...channels, channel.name]))
     })
   }
 
@@ -43,7 +56,8 @@ function Chat(props) {
   }
 
   useEffect(() => {
-    getChannels();
+    getMyChannels();
+    getAllChannels();
   }, []);
 
   useEffect(() => {
@@ -72,7 +86,7 @@ function Chat(props) {
   const sendMessage = message => {
     if (message) {
       pubnub
-        .publish({ channel: channels[1], message })
+        .publish({ channel: currentChannel, message })
         .then(() => setMessage(''));
     }
   };
@@ -175,71 +189,5 @@ const buttonStyles = {
   fontSize: '1.1rem',
   padding: '10px 15px',
 };
-
-
-// class Chat extends Component {
-//   constructor(props) {
-//     super(props)
-//     this.state = {channels: [], messages: [], createMessage: []}
-//     this.pubnub = usePubNub();
-//   }
-
-//   // componentDidMount() {
-//   //   this.getChannels();
-//   //   this.pubnub.addListener({ message: this.handleMessage });
-//   //   this.pubnub.subscribe({ this.state.channels });
-//   // }
-
-//   getChannels = () => {
-//     fetch(`http://localhost:3000/api/v1/channels?username=${props.uuid}`, {
-//       headers: {
-//         "Content-Type": "application/json",
-//         Accepts: "application/json",
-//       },
-//     })
-//     .then((response) => response.json())
-//     .then((data) => {
-//       data.forEach(channel => this.setState(prevState => {channels: [...prevState, channel.name]}))
-//     })
-//   }
-
-//   handleMessage = event => {
-//     const message = event.message;
-//     if (typeof message === 'string' || message.hasOwnProperty('text')) {
-//       const text = message.text || message;
-//       this.setState(prevState => {messages: [...prevState, text]})
-//     }
-//   };
-
-//   sendMessage = message => {
-//     if (message) {
-//       pubnub
-//         .publish({ channel: this.state.channels[0], message })
-//         .then(() => setMessage(''));
-//     }
-//   };
-
-//   // useEffect(() => {
-//   //   pubnub.addListener({ message: handleMessage });
-//   //   pubnub.subscribe({ channels });
-//   // }, [pubnub, channels]);
-//   render() {
-//     return <p>hey</p>
-//   }
-
-//   // render() {
-//   //   return (
-//   //     <Container>
-//   //       <Button onClick={this.randomiseWord}>Next word</Button>
-//   //       <h1>{this.capitalize(this.state.randomWord)}</h1>
-//   //       <WordGrid>
-//   //         {this.state.rhymingWords.map((word, i) => {
-//   //           return <p>{this.capitalize(word["word"])}</p>
-//   //         })}
-//   //       </WordGrid>
-//   //     </Container>
-//   //   )
-//   // }
-// }
 
 export default Chat;
