@@ -32,6 +32,11 @@ const NewAccount = (props) => {
           name='username'
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          onKeyPress={e => {
+            if (e.key === 'Enter') {
+              submitUser();
+            }
+          }}
           />
       </div>
       <div>
@@ -41,6 +46,11 @@ const NewAccount = (props) => {
           name='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyPress={e => {
+            if (e.key === 'Enter') {
+              submitUser();
+            }
+          }}
           />
           <p>n.b. passwords are stored as strings, please do not use a real password</p>
       </div>

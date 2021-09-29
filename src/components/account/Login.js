@@ -35,6 +35,11 @@ const Login = (props) => {
           name='username'
           value={username}
           onChange={(e) => setUsername(e.target.value)}
+          onKeyPress={e => {
+            if (e.key === 'Enter') {
+              getUser();
+            }
+          }}
           />
       </div>
       <div>
@@ -44,6 +49,11 @@ const Login = (props) => {
           name='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          onKeyPress={e => {
+            if (e.key === 'Enter') {
+              getUser();
+            }
+          }}
           />
       </div>
       <button onClick={getUser}>Submit</button>

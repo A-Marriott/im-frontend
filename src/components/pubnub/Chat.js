@@ -6,8 +6,37 @@ function Chat(props) {
   const [channels, setChannels] = useState([]);
   const [allChannels, setAllChannels] = useState([]);
   const [currentChannel, setCurrentChannel] = useState('');
-  const [messages, addMessage] = useState([]);
+  const [messages, addMessage] = useState({});
   const [message, setMessage] = useState('');
+  const [msg, newmsg] = useState({})
+
+  const getMessages = () => {
+    addMessage([])
+    pubnub.fetchMessages(
+        {
+            channels: channels,
+            end: '15343325004275466',
+            count: 100
+        },
+        (status, response) => {
+          const obj = {}
+          channels.forEach(ch => {
+            obj[ch] = []
+            const channelAccessString = ch.replace(' ', '%20')
+            response.channels[channelAccessString]?.forEach(msg => {
+              obj[ch].push({message: msg.message, user: msg.uuid})
+            })
+          })
+          addMessage(obj)
+        }
+    );
+  }
+
+  useEffect(() => {
+    if (channels.length > 0) {
+      getMessages();
+    }
+  }, [channels]);
 
   const getMyChannels = () => {
     fetch(`http://localhost:3000/api/v1/channels/1?username=${props.uuid}`, {
@@ -38,50 +67,39 @@ function Chat(props) {
     })
   }
 
-  const getMessages = () => {
-    addMessage([])
-    pubnub.fetchMessages(
-        {
-            channels: [currentChannel],
-            end: '15343325004275466',
-            count: 100
-        },
-        (status, response) => {
-          const channelAccessString = currentChannel.replace(' ', '%20')
-          response.channels[channelAccessString]?.forEach(msg => {
-            addMessage(messages => [...messages, msg.message]);
-          })
-        }
-    );
-  }
-
   useEffect(() => {
     getMyChannels();
     getAllChannels();
   }, []);
 
   useEffect(() => {
-    pubnub.removeListener({ message: handleMessage })
 
     if (channels.length > 0) {
+      pubnub.removeListener({ message: handleMessage })
       pubnub.addListener({ message: handleMessage });
       pubnub.subscribe({ channels });
     }
   }, [pubnub, channels]);
 
-  useEffect(() => {
-    if (currentChannel.length > 0) {
-      getMessages();
-    }
-  }, [currentChannel]);
-
   const handleMessage = event => {
+    const channel = event.channel
+    const publisher = event.publisher
     const message = event.message;
     if (typeof message === 'string' || message.hasOwnProperty('text')) {
       const text = message.text || message;
-      addMessage(messages => [...messages, text]);
+      newmsg({message: text, user: publisher})
     }
   };
+
+  useEffect(() => {
+    if (Object.keys(msg).length > 0) {
+      doThing();
+    }
+  }, [msg]);
+
+  const doThing = () => {
+    addMessage({...messages, [currentChannel]: [...messages[currentChannel], msg]})
+  }
 
   const sendMessage = message => {
     if (message) {
@@ -96,10 +114,10 @@ function Chat(props) {
       <div style={chatStyles}>
         <div style={headerStyles}>React Chat Example</div>
         <div style={listStyles}>
-          {messages.map((message, index) => {
+          {messages[currentChannel]?.map((message, index) => {
             return (
               <div key={`message-${index}`} style={messageStyles}>
-                {message}
+                {message.user} - {message.message}
               </div>
             );
           })}
@@ -128,6 +146,15 @@ function Chat(props) {
           {channels?.map(channel => {
             return <button onClick={() => setCurrentChannel(channel)}>{channel}</button>
           })}
+          <button
+            style={buttonStyles}
+            onClick={e => {
+              e.preventDefault();
+              console.log(messages)
+            }}
+          >
+            Check
+          </button>
         </div>
       </div>
     </div>

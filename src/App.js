@@ -6,6 +6,18 @@ import UserGreeting from './components/account/UserGreeting';
 import Chat from './components/pubnub/Chat';
 
 function App() {
+
+  // const [thing, setThing] = useState({1: 'ting'})
+
+  // useEffect(() => {
+  //   setThing({...thing, 2: 'another'})
+  //   console.log(thing)
+  // }, []);
+
+
+  // console.log(thing)
+
+  // return <p>hey</p>
   const [loggedIn, setLoggedIn] = useState(false)
   const [uuid, setuuid] = useState('')
 
