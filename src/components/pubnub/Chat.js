@@ -1,27 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { usePubNub } from 'pubnub-react';
-import styled from 'styled-components'
+import styled from 'styled-components';
+
+import ChatScreen from './ChatScreen';
 
 function Chat(props) {
   const pubnub = usePubNub();
+  const [listenerAdded, setListenerAdded] = useState(false);
+
   const [channels, setChannels] = useState([]);
   const [allChannels, setAllChannels] = useState([]);
   const [currentChannel, setCurrentChannel] = useState('');
+
   const [messages, addMessage] = useState({});
   const [message, setMessage] = useState('');
-  const [msg, newmsg] = useState(['', {}]);
-  const [listenerAdded, setListenerAdded] = useState(false);
+  const [incomingMessage, setIncomingMessage] = useState(['', {}]);
 
-  useEffect(() => {
-    getMyChannels();
-    getAllChannels();
-  }, []);
-
-  useEffect(() => {
-    if (channels.length > 0) {
-      getMessages();
-    }
-  }, [channels]);
+  // init pubnub
 
   useEffect(() => {
     pubnub.subscribe({ channels });
@@ -31,11 +26,12 @@ function Chat(props) {
     }
   }, [pubnub, channels]);
 
+  // Channel functions
+
   useEffect(() => {
-    if (Object.keys(msg[1]).length > 0) {
-      doThing();
-    }
-  }, [msg]);
+    getMyChannels();
+    getAllChannels();
+  }, []);
 
   const getMyChannels = () => {
     fetch(`http://localhost:3000/api/v1/channels/1?username=${props.uuid}`, {
@@ -46,7 +42,7 @@ function Chat(props) {
     })
     .then((response) => response.json())
     .then((data) => {
-      let channelArray = []
+      const channelArray = []
       data.forEach(channel => channelArray.push(channel.name))
       setCurrentChannel(channelArray[0])
       setChannels(channelArray)
@@ -62,7 +58,7 @@ function Chat(props) {
     })
     .then((response) => response.json())
     .then((data) =>  {
-      let channelArray = []
+      const channelArray = []
       data.forEach(channel => channelArray.push(channel.name))
       setAllChannels(channelArray)
     })
@@ -96,8 +92,21 @@ function Chat(props) {
     })
   }
 
+  // Message functions
+
+  useEffect(() => {
+    if (channels.length > 0) {
+      getMessages();
+    }
+  }, [channels]);
+
+  useEffect(() => {
+    if (Object.keys(incomingMessage[1]).length > 0) {
+      addIncomingMessage();
+    }
+  }, [incomingMessage]);
+
   const getMessages = () => {
-    addMessage([])
     pubnub.fetchMessages(
         {
             channels: channels,
@@ -105,31 +114,34 @@ function Chat(props) {
             count: 100
         },
         (status, response) => {
-          const obj = {}
-          channels.forEach(ch => {
-            obj[ch] = []
-            const channelAccessString = ch.replace(' ', '%20')
+          const messageList = {}
+          channels.forEach(channel => {
+            messageList[channel] = []
+            const channelAccessString = channel.replace(' ', '%20')
             response.channels[channelAccessString]?.forEach(msg => {
-              obj[ch].push({message: msg.message, user: msg.uuid})
+              messageList[channel].push({message: msg.message, user: msg.uuid})
             })
           })
-          addMessage(obj)
+          addMessage(messageList)
         }
     );
   }
 
   const handleMessage = event => {
-    const channel = event.channel
-    const publisher = event.publisher
+    const channel = event.channel;
+    const publisher = event.publisher;
     const message = event.message;
     if (typeof message === 'string' || message.hasOwnProperty('text')) {
       const text = message.text || message;
-      newmsg([channel, {message: text, user: publisher}])
+      setIncomingMessage([channel, {message: text, user: publisher}])
     }
   };
 
-  const doThing = () => {
-    addMessage({...messages, [msg[0]]: [...messages[msg[0]], msg[1]]})
+  // The pubnub event listener doesn't seem to update state inside of its event listeners
+  // This method is therefore needed to collect the incoming message and pass it to messages without overwriting the state of messages
+
+  const addIncomingMessage = () => {
+    addMessage({...messages, [incomingMessage[0]]: [...messages[incomingMessage[0]], incomingMessage[1]]})
   }
 
   const sendMessage = message => {
@@ -139,54 +151,6 @@ function Chat(props) {
         .then(() => setMessage(''));
     }
   };
-
-  let chatScreen
-
-  if (channels.includes(currentChannel)) {
-    chatScreen = <RightScreen joinChannel={false}>
-                   <ChatContainer>
-                     {messages[currentChannel]?.map(msg => msg).reverse().map((message, index) => {
-                       return (
-                         <Message key={`message-${index}`}>
-                           {message.user} - {message.message}
-                         </Message>
-                        );
-                      })}
-                     <a
-                       onClick={e => {
-                         e.preventDefault();
-                         leaveChannel();
-                       }}
-                     >
-                       <DeleteButton src="delete-button.svg" alt=""/>
-                     </a>
-                   </ChatContainer>
-                   <InputContainer>
-                     <Input
-                       type="text"
-                       placeholder="Type your message"
-                       value={message}
-                       onKeyPress={e => {
-                         if (e.key !== 'Enter') return;
-                         sendMessage(message);
-                       }}
-                       onChange={e => setMessage(e.target.value)}
-                     />
-                     <a
-                       onClick={e => {
-                         e.preventDefault();
-                         sendMessage(message);
-                       }}
-                     >
-                       <SendButton src="send.png" alt=""/>
-                     </a>
-                   </InputContainer>
-                 </RightScreen>
-  } else {
-    chatScreen = <RightScreen joinChannel={true}>
-                   <JoinChannel onClick={() => joinChannel()}>Join Channel?</JoinChannel>
-                 </RightScreen>
-  }
 
   return (
     <Container>
@@ -206,7 +170,7 @@ function Chat(props) {
           })}
         </ChannelsContainer>
       </LeftScreen>
-      {chatScreen}
+      <ChatScreen channels={channels} currentChannel={currentChannel} messages={messages} message={message} leaveChannel={leaveChannel} sendMessage={sendMessage} setMessage={setMessage} joinChannel={joinChannel}></ChatScreen>
     </Container>
   );
 }
@@ -255,84 +219,12 @@ const ChannelsContainer = styled.div`
   height: 80vh;
 `;
 
-const DeleteButton = styled.img`
-  position: absolute;
-  height: 30px;
-  right: 0px;
-  top: 0px;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
 const ChannelButton = styled.button`
   width: 100%;
   margin-bottom: 12px;
   height: 32px;
   color: white;
   border-radius: 16px 0 0 16px;
-  border: none;
-  font-weight: bold;
-  background-color: #3D2C8D;
-  font-size: 14px;
-  transition: background 0.3s ease;
-  &:hover {
-    background: #3B889B;
-    cursor: pointer;
-  }
-`;
-
-const RightScreen = styled.div`
-  padding: 24px;
-  flex-basis: 75%;
-  display: flex;
-  flex-direction: column;
-  justify-content: ${props => (props.joinChannel ? 'center' : 'space-between')};
-`;
-
-const ChatContainer = styled.div`
-  position: relative;
-  display: flex;
-  align-items: flex-start;
-  flex-direction: column-reverse;
-  flex-grow: 1;
-  overflow: auto;
-  height: 80vh;
-`;
-
-const Message = styled.div`
-  background-color: #eee;
-  border-radius: 6px;
-  color: #333;
-  // fontSize: 1.1rem;
-  margin: 5px;
-  padding: 8px 15px;
-`;
-
-const InputContainer = styled.div`
-  margin-top: 8px;
-  display: flex;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  height: 24px;
-  padding: 8px;
-  border-radius: 6px 0 0 6px;
-`;
-
-const SendButton = styled.img`
-  height: 30px;
-  border-radius: 0 6px 6px 0;
-  &:hover {
-    cursor: pointer;
-  }
-`;
-
-const JoinChannel = styled.button`
-  color: white;
-  height: 64px;
-  border-radius: 16px;
   border: none;
   font-weight: bold;
   background-color: #3D2C8D;

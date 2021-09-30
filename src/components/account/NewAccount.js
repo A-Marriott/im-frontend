@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 const NewAccount = (props) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [errorMessage, setErrorMessage] = useState(false)
+
+  const error = <p>Sorry, something went wrong when making your account. This is likely because you have chosen the same username as another user.</p>
 
   const submitUser = () => {
     fetch('http://localhost:3000/api/v1/users', {
@@ -13,7 +16,12 @@ const NewAccount = (props) => {
         Accepts: "application/json",
       },
     })
-    .then((response) => response.json())
+    .then((response) => {
+      if (response.status === 500) {
+        setErrorMessage(true)
+      }
+      return response.json()
+    })
     .then((data) => {
       if (data) {
         props.setuuid(username)
@@ -42,7 +50,7 @@ const NewAccount = (props) => {
       <div>
         <label>Password</label>
         <input
-          type='text'
+          type='password'
           name='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -54,6 +62,7 @@ const NewAccount = (props) => {
           />
           <p>n.b. passwords are stored as strings, please do not use a real password</p>
       </div>
+      {errorMessage && error}
       <img src="robot1.png" width="100" height="100"/>
       <img src="robot2.png" width="100" height="100"/>
       <img src="robot3.png" width="100" height="100"/>

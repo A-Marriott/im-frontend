@@ -8,7 +8,9 @@ const Login = (props) => {
   const error = <p>Either your username or password was incorrect</p>
 
   const getUser = () => {
-    fetch(`http://localhost:3000/api/v1/users?username=${username}&password=${password}`, {
+    fetch('http://localhost:3000/api/v1/verify', {
+      method: 'post',
+      body: JSON.stringify({username: username, password: password}),
       headers: {
         "Content-Type": "application/json",
         Accepts: "application/json",
@@ -45,7 +47,7 @@ const Login = (props) => {
       <div>
         <label>Password</label>
         <input
-          type='text'
+          type='password'
           name='password'
           value={password}
           onChange={(e) => setPassword(e.target.value)}
