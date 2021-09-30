@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { usePubNub } from 'pubnub-react';
+import styled from 'styled-components'
 
 function Chat(props) {
   const pubnub = usePubNub();
@@ -110,47 +111,115 @@ function Chat(props) {
   };
 
   return (
-    <div style={pageStyles}>
-      <div style={chatStyles}>
-        <div style={headerStyles}>React Chat Example</div>
-        <div style={listStyles}>
-          {messages[currentChannel]?.map(msg => msg).reverse().map((message, index) => {
-            return (
-              <div key={`message-${index}`} style={messageStyles}>
-                {message.user} - {message.message}
-              </div>
-            );
-          })}
-        </div>
-        <div style={footerStyles}>
-          <input
-            type="text"
-            style={inputStyles}
-            placeholder="Type your message"
-            value={message}
-            onKeyPress={e => {
-              if (e.key !== 'Enter') return;
-              sendMessage(message);
-            }}
-            onChange={e => setMessage(e.target.value)}
-          />
-          <button
-            style={buttonStyles}
-            onClick={e => {
-              e.preventDefault();
-              sendMessage(message);
-            }}
-          >
-            Send Message
-          </button>
+    <Container>
+      <LeftScreen>
+        <ProfileContainer>
+          <Avatar src="robot1.png" alt=""/>
+          <p>My name</p>
+        </ProfileContainer>
+        <ChannelsContainer>
           {channels?.map(channel => {
-            return <button onClick={() => setCurrentChannel(channel)}>{channel}</button>
+            return <ChannelButton onClick={() => setCurrentChannel(channel)}>{channel}</ChannelButton>
           })}
-        </div>
-      </div>
-    </div>
+        </ChannelsContainer>
+      </LeftScreen>
+      <ChatContainer>
+        {messages[currentChannel]?.map(msg => msg).reverse().map((message, index) => {
+          return (
+            <Message key={`message-${index}`}>
+              {message.user} - {message.message}
+            </Message>
+          );
+        })}
+        <Input>
+        </Input>
+        <SendButton>
+        </SendButton>
+      </ChatContainer>
+    </Container>
   );
 }
+
+const Container = styled.div`
+`;
+
+const LeftScreen = styled.div`
+`;
+
+const ProfileContainer = styled.div`
+`;
+
+const Avatar = styled.img`
+`;
+
+const ChannelsContainer = styled.div`
+`;
+
+const ChannelButton = styled.button`
+`;
+
+const ChatContainer = styled.div`
+`;
+
+const Message = styled.div`
+`;
+
+const Input = styled.input`
+`;
+
+const SendButton = styled.button`
+`;
+
+const PageStyles = styled.div`
+  alignItems: center;
+  background: #282c34;
+  display: flex;
+  justifyContent: center;
+  minHeight: 100vh;
+`;
+
+const ChatStyles = styled.div`
+  display: flex;
+  flexDirection: column;
+  height: 50vh;
+  width: 50%;
+`;
+
+const ListStyles = styled.div`
+  alignItems: flex-start;
+  backgroundColor: white;
+  display: flex;
+  flexDirection: column-reverse;
+  flexGrow: 1;
+  overflow: auto;
+  padding: 10px;
+`;
+
+const MessageStyles = styled.div`
+  position: relative;
+  right: 0px;
+  backgroundColor: #eee;
+  borderRadius: 5px;
+  color: #333;
+  fontSize: 1.1rem;
+  margin: 5px;
+  padding: 8px 15px;
+`;
+
+const FooterStyles = styled.div`
+  display: flex;
+`;
+
+const InputStyles = styled.input`
+  flexGrow: 1;
+  fontSize: 1.1rem;
+  padding: 10px 15px;
+`;
+
+const ButtonStyles = styled.button`
+  fontSize: 1.1rem;
+  padding: 10px 15px;
+`;
 
 const pageStyles = {
   alignItems: 'center',
