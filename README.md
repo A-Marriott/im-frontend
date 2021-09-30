@@ -4,7 +4,7 @@ Welcome! This app is an instant messaging platform, using a rails server, react 
 
 In order to run the app, make sure you have [Node](https://nodejs.org/en/) installed.
 
-Once this is done, navigate to the root directory in your CLI and type the following command:
+Once this is done, navigate to the root directory in your CLI and type the following commands:
 
 ```
 npm install
