@@ -115,7 +115,7 @@ function Chat(props) {
       <LeftScreen>
         <ProfileContainer>
           <Avatar src="robot1.png" alt=""/>
-          <p>My name</p>
+          <Username>{props.uuid}</Username>
         </ProfileContainer>
         <ChannelsContainer>
           {channels?.map(channel => {
@@ -131,9 +131,25 @@ function Chat(props) {
             </Message>
           );
         })}
-        <Input>
-        </Input>
-        <SendButton>
+        <Input
+          type="text"
+          style={inputStyles}
+          placeholder="Type your message"
+          value={message}
+          onKeyPress={e => {
+            if (e.key !== 'Enter') return;
+            sendMessage(message);
+          }}
+          onChange={e => setMessage(e.target.value)}
+        />
+        <SendButton
+          style={buttonStyles}
+          onClick={e => {
+            e.preventDefault();
+            sendMessage(message);
+          }}
+        >
+        Send Message
         </SendButton>
       </ChatContainer>
     </Container>
@@ -141,24 +157,60 @@ function Chat(props) {
 }
 
 const Container = styled.div`
+  display: flex;
+  padding: 25px;
+  height: 100vh;
+  // background-color: #171F24;
+  // color: white;
 `;
 
 const LeftScreen = styled.div`
 `;
 
 const ProfileContainer = styled.div`
+  border-bottom: solid 2px grey;
+  padding: 12px;
+  display: flex;
+  align-items: center;
 `;
 
 const Avatar = styled.img`
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  border: 1px solid black;
 `;
 
+const Username = styled.p`
+  margin-left: 12px;
+`
+
 const ChannelsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  padding: 4px;
 `;
 
 const ChannelButton = styled.button`
+  width: 100%;
+  margin-bottom: 8px;
+  height: 24px;
+  color: white;
+  border-radius: 4px;
+  border: none;
+  font-weight: bold;
+  background: #4FB0C6;
+  transition: background 0.3s ease;
+  &:hover {
+    background: #3B889B;
+    cursor: pointer;
+  }
 `;
 
 const ChatContainer = styled.div`
+  padding: 24px;
+  width: 700px;
 `;
 
 const Message = styled.div`
@@ -234,13 +286,6 @@ const chatStyles = {
   flexDirection: 'column',
   height: '50vh',
   width: '50%',
-};
-
-const headerStyles = {
-  background: '#323742',
-  color: 'white',
-  fontSize: '1.4rem',
-  padding: '10px 15px',
 };
 
 const listStyles = {
