@@ -7,6 +7,7 @@ In order to run the app, make sure you have [Node](https://nodejs.org/en/) insta
 Once this is done, navigate to the root directory in your CLI and type the following command:
 
 ```
+npm install
 npm start
 ```
 
