@@ -185,6 +185,8 @@ const listStyles = {
 };
 
 const messageStyles = {
+  position: 'relative',
+  right: '0px',
   backgroundColor: '#eee',
   borderRadius: '5px',
   color: '#333',
