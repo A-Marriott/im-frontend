@@ -8,6 +8,7 @@ import Chat from './components/pubnub/Chat';
 function App() {
   const [loggedIn, setLoggedIn] = useState(false)
   const [uuid, setuuid] = useState('')
+  const [avatarNum, setAvatarNum] = useState(1)
 
   if (loggedIn) {
     const pubnub = new PubNub({
@@ -18,11 +19,11 @@ function App() {
 
     return (
     <PubNubProvider client={pubnub}>
-      <Chat uuid={uuid}/>
+      <Chat uuid={uuid} avatarNum={avatarNum}/>
     </PubNubProvider>
     )
   } else {
-    return <UserGreeting setLoggedIn={setLoggedIn} setuuid={setuuid}/>;
+    return <UserGreeting setLoggedIn={setLoggedIn} setuuid={setuuid} avatarNum={avatarNum} setAvatarNum={setAvatarNum}/>;
   }
 }
 

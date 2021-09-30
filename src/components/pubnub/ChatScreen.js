@@ -7,9 +7,12 @@ function ChatScreen(props) {
         <ChatContainer>
           {props.messages[props.currentChannel]?.map(msg => msg).reverse().map((message, index) => {
             return (
-              <Message key={`message-${index}`}>
-                {message.user} - {message.message}
-              </Message>
+              <MessageContainer>
+                <p>{message.user}</p>
+                <Message key={`message-${index}`}>
+                  {message.message}
+                </Message>
+              </MessageContainer>
             );
           })}
          <DeleteButton src="delete-button.svg" alt="" onClick={() => props.leaveChannel()}/>
@@ -25,7 +28,7 @@ function ChatScreen(props) {
            }}
            onChange={e => props.setMessage(e.target.value)}
          />
-         <SendButton src="send.png" alt="" onClick={() => props.sendMessage(props.message)}/>
+         <SendButton src="send-icon.png" alt="" onClick={() => props.sendMessage(props.message)}/>
        </InputContainer>
      </RightScreen>
    )
@@ -56,12 +59,20 @@ const ChatContainer = styled.div`
   height: 80vh;
 `;
 
+const MessageContainer = styled.div`
+  margin-left: 5px;
+`;
+
 const Message = styled.div`
+  display: flex;
+  min-height: 30px;
+  align-items: center;
   background-color: #eee;
   border-radius: 6px;
   color: #333;
   // fontSize: 1.1rem;
   margin: 5px;
+  margin-left: -2px;
   padding: 8px 15px;
 `;
 
@@ -76,8 +87,9 @@ const DeleteButton = styled.img`
 `;
 
 const InputContainer = styled.div`
-  margin-top: 8px;
+  margin-top: 32px;
   display: flex;
+  position: relative;
 `;
 
 const Input = styled.input`
@@ -88,7 +100,11 @@ const Input = styled.input`
 `;
 
 const SendButton = styled.img`
-  height: 30px;
+  position: absolute;
+  right: 2px;
+  top: 5px;
+  height: 35px;
+  width: 40px;
   border-radius: 0 6px 6px 0;
   &:hover {
     cursor: pointer;

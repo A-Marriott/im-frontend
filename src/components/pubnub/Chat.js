@@ -156,17 +156,25 @@ function Chat(props) {
     <Container>
       <LeftScreen>
         <ProfileContainer>
-          <Avatar src="robot1.png" alt=""/>
+          <Avatar src={`robot${props.avatarNum}.png`} alt=""/>
           <Username>{props.uuid}</Username>
         </ProfileContainer>
         <ChannelsContainer>
           <p>My channels</p>
           {channels?.map(channel => {
-            return <ChannelButton onClick={() => setCurrentChannel(channel)}>{channel}</ChannelButton>
+            return <ChannelButton
+              onClick={() => setCurrentChannel(channel)}
+              style={ currentChannel === channel ? {backgroundColor: '#3B889B'} : {}}>
+              {channel}
+            </ChannelButton>
           })}
           <p>Other channels</p>
           {allChannels.filter(el => !channels.includes(el))?.map(channel => {
-            return <ChannelButton onClick={() => setCurrentChannel(channel)}>{channel}</ChannelButton>
+            return <ChannelButton
+              onClick={() => setCurrentChannel(channel)}
+              style={ currentChannel === channel ? {backgroundColor: '#3B889B'} : {}}>
+              {channel}
+            </ChannelButton>
           })}
         </ChannelsContainer>
       </LeftScreen>
