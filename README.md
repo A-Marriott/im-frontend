@@ -23,6 +23,5 @@ Usernames
 - WALL-E
 - OptimusPrime
 
-For every account:
-Password
+For every account, the password:
 - password
