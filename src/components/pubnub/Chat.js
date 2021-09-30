@@ -123,35 +123,37 @@ function Chat(props) {
           })}
         </ChannelsContainer>
       </LeftScreen>
-      <ChatContainer>
-        {messages[currentChannel]?.map(msg => msg).reverse().map((message, index) => {
-          return (
-            <Message key={`message-${index}`}>
-              {message.user} - {message.message}
-            </Message>
-          );
-        })}
-        <Input
-          type="text"
-          style={inputStyles}
-          placeholder="Type your message"
-          value={message}
-          onKeyPress={e => {
-            if (e.key !== 'Enter') return;
-            sendMessage(message);
-          }}
-          onChange={e => setMessage(e.target.value)}
-        />
-        <SendButton
-          style={buttonStyles}
-          onClick={e => {
-            e.preventDefault();
-            sendMessage(message);
-          }}
-        >
-        Send Message
-        </SendButton>
-      </ChatContainer>
+      <RightScreen>
+        <ChatContainer>
+          {messages[currentChannel]?.map(msg => msg).reverse().map((message, index) => {
+            return (
+              <Message key={`message-${index}`}>
+                {message.user} - {message.message}
+              </Message>
+            );
+          })}
+        </ChatContainer>
+        <InputContainer>
+          <Input
+            type="text"
+            placeholder="Type your message"
+            value={message}
+            onKeyPress={e => {
+              if (e.key !== 'Enter') return;
+              sendMessage(message);
+            }}
+            onChange={e => setMessage(e.target.value)}
+          />
+          <a
+            onClick={e => {
+              e.preventDefault();
+              sendMessage(message);
+            }}
+          >
+            <SendButton src="send.png" alt=""/>
+          </a>
+        </InputContainer>
+      </RightScreen>
     </Container>
   );
 }
@@ -159,12 +161,16 @@ function Chat(props) {
 const Container = styled.div`
   display: flex;
   padding: 25px;
-  height: 100vh;
-  // background-color: #171F24;
-  // color: white;
+  height: 100%;
+  // overflow: hidden;
+  background-color: #150050;
+  color: white;
 `;
 
 const LeftScreen = styled.div`
+  flex-basis: 25%;
+  background-color: #3D2C8D;
+  border-radius: 10px 0 0 10px;
 `;
 
 const ProfileContainer = styled.div`
@@ -172,35 +178,39 @@ const ProfileContainer = styled.div`
   padding: 12px;
   display: flex;
   align-items: center;
+  justify-content: center;
 `;
 
 const Avatar = styled.img`
   height: 40px;
   width: 40px;
   border-radius: 50%;
-  border: 1px solid black;
+  border: 2px solid white;
 `;
 
 const Username = styled.p`
   margin-left: 12px;
+  font-size: 20px;
+  font-weight: bold;
 `
 
 const ChannelsContainer = styled.div`
   display: flex;
   flex-direction: column;
-  margin-top: 8px;
-  padding: 4px;
+  margin-top: 16px;
+  margin-left: 8px;
 `;
 
 const ChannelButton = styled.button`
   width: 100%;
-  margin-bottom: 8px;
-  height: 24px;
+  margin-bottom: 12px;
+  height: 32px;
   color: white;
-  border-radius: 4px;
+  border-radius: 16px 0 0 16px;
   border: none;
   font-weight: bold;
-  background: #4FB0C6;
+  background-color: #3D2C8D;
+  font-size: 14px;
   transition: background 0.3s ease;
   &:hover {
     background: #3B889B;
@@ -208,120 +218,46 @@ const ChannelButton = styled.button`
   }
 `;
 
+const RightScreen = styled.div`
+  padding-left: 24px;
+  flex-basis: 75%;
+`;
+
 const ChatContainer = styled.div`
-  padding: 24px;
-  width: 700px;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column-reverse;
+  flex-grow: 1;
+  overflow: auto;
+  height: 80vh;
 `;
 
 const Message = styled.div`
-`;
-
-const Input = styled.input`
-`;
-
-const SendButton = styled.button`
-`;
-
-const PageStyles = styled.div`
-  alignItems: center;
-  background: #282c34;
-  display: flex;
-  justifyContent: center;
-  minHeight: 100vh;
-`;
-
-const ChatStyles = styled.div`
-  display: flex;
-  flexDirection: column;
-  height: 50vh;
-  width: 50%;
-`;
-
-const ListStyles = styled.div`
-  alignItems: flex-start;
-  backgroundColor: white;
-  display: flex;
-  flexDirection: column-reverse;
-  flexGrow: 1;
-  overflow: auto;
-  padding: 10px;
-`;
-
-const MessageStyles = styled.div`
-  position: relative;
-  right: 0px;
-  backgroundColor: #eee;
-  borderRadius: 5px;
+  background-color: #eee;
+  border-radius: 6px;
   color: #333;
-  fontSize: 1.1rem;
+  // fontSize: 1.1rem;
   margin: 5px;
   padding: 8px 15px;
 `;
 
-const FooterStyles = styled.div`
+const InputContainer = styled.div`
+  margin-top: 8px;
   display: flex;
 `;
 
-const InputStyles = styled.input`
-  flexGrow: 1;
-  fontSize: 1.1rem;
-  padding: 10px 15px;
+const Input = styled.input`
+  width: 100%;
+  height: 24px;
+  border-radius: 6px 0 0 6px;
 `;
 
-const ButtonStyles = styled.button`
-  fontSize: 1.1rem;
-  padding: 10px 15px;
+const SendButton = styled.img`
+  height: 30px;
+  border-radius: 0 6px 6px 0;
+  &:hover {
+    cursor: pointer;
+  }
 `;
-
-const pageStyles = {
-  alignItems: 'center',
-  background: '#282c34',
-  display: 'flex',
-  justifyContent: 'center',
-  minHeight: '100vh',
-};
-
-const chatStyles = {
-  display: 'flex',
-  flexDirection: 'column',
-  height: '50vh',
-  width: '50%',
-};
-
-const listStyles = {
-  alignItems: 'flex-start',
-  backgroundColor: 'white',
-  display: 'flex',
-  flexDirection: 'column-reverse',
-  flexGrow: 1,
-  overflow: 'auto',
-  padding: '10px',
-};
-
-const messageStyles = {
-  position: 'relative',
-  right: '0px',
-  backgroundColor: '#eee',
-  borderRadius: '5px',
-  color: '#333',
-  fontSize: '1.1rem',
-  margin: '5px',
-  padding: '8px 15px',
-};
-
-const footerStyles = {
-  display: 'flex',
-};
-
-const inputStyles = {
-  flexGrow: 1,
-  fontSize: '1.1rem',
-  padding: '10px 15px',
-};
-
-const buttonStyles = {
-  fontSize: '1.1rem',
-  padding: '10px 15px',
-};
 
 export default Chat;
