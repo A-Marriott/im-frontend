@@ -34,7 +34,7 @@ function Chat(props) {
   }, []);
 
   const getMyChannels = () => {
-    fetch(`http://localhost:3000/api/v1/channels/1?username=${props.uuid}`, {
+    fetch(`https://lex-chat-app-backend.herokuapp.com/api/v1/channels/1?username=${props.uuid}`, {
       headers: {
         "Content-Type": "application/json",
         Accepts: "application/json",
@@ -50,7 +50,7 @@ function Chat(props) {
   }
 
   const getAllChannels = () => {
-    fetch('http://localhost:3000/api/v1/channels/', {
+    fetch('https://lex-chat-app-backend.herokuapp.com/api/v1/channels', {
       headers: {
         "Content-Type": "application/json",
         Accepts: "application/json",
@@ -65,7 +65,7 @@ function Chat(props) {
   }
 
   const joinChannel = () => {
-    fetch('http://localhost:3000/api/v1/user_channels', {
+    fetch('https://lex-chat-app-backend.herokuapp.com/api/v1/user_channels', {
       method: 'post',
       body: JSON.stringify({user_id: [props.uuid], channel_id: [currentChannel]}),
       headers: {
@@ -77,7 +77,7 @@ function Chat(props) {
   }
 
   const leaveChannel = () => {
-    fetch('http://localhost:3000/api/v1/user_channels/1', {
+    fetch('https://lex-chat-app-backend.herokuapp.com/api/v1/user_channels/1', {
       method: 'delete',
       body: JSON.stringify({user_id: [props.uuid], channel_id: [currentChannel]}),
       headers: {

@@ -8,7 +8,7 @@ const UserGreeting = (props) => {
   const [errorMessage, setErrorMessage] = useState(false)
 
   const submitUser = () => {
-    fetch('http://localhost:3000/api/v1/users', {
+    fetch('https://lex-chat-app-backend.herokuapp.com/api/v1/users', {
       method: 'post',
       body: JSON.stringify({username: username, password: password, avatar_num: props.avatarNum}),
       headers: {
@@ -31,7 +31,7 @@ const UserGreeting = (props) => {
   }
 
   const getUser = () => {
-    fetch('http://localhost:3000/api/v1/verify', {
+    fetch('https://lex-chat-app-backend.herokuapp.com/api/v1/verify', {
       method: 'post',
       body: JSON.stringify({username: username, password: password}),
       headers: {
